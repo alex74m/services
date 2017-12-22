@@ -11,8 +11,15 @@ Entre ces deux versions, le format n'est pas supporté par GD.
 */
 
 
+
+
 class UploadImage
 {
+
+	const MAX_UPLOAD_SIZE = 2097152;
+	const WIDTH_INIT = 500;
+	const QUALITY_PERCENT = 100;
+	// Données d'objet
 	private $imageUpload;
 	private $imageUploadError;
 	private $imageUploadName;
@@ -20,8 +27,19 @@ class UploadImage
 	private $imageUploadSize;
 	private $imageUploadExtension;
 	private $imageUploadMime;
+
+	private $width;
+	private $qualityPercent;
+	private $newNameImage;
+	private $prefixe;
+	private $suffixe;
+
+
+	//Contrains
 	private $extensionAllowed;
 	private $extensionEIAllowed;
+	private $maxSizeUpload;
+
 	//Traitement
 	private $imageCopyTmpName;
 	private $imageCopySize;
@@ -30,12 +48,51 @@ class UploadImage
 	private $pt_src_x;
 	private $pt_src_y;
 
-	private $maxSizeUpload;
+
 
 	public function __construct($imageUpload){
 		$this->imageUpload = $imageUpload;
 		$this->maxSizeUpload = $this->maxSizeUpload();
+		$this->coordonate();
+		$this->width();
+		$this->qualityPercent();
+		$this->newNameImage();
+		$this->prefixer();
+		$this->suffixer();
 	}
+
+	//Traitement de base
+	public function maxSizeUpload($maxSizeUpload = self::MAX_UPLOAD_SIZE){
+		$this->maxSizeUpload = $maxSizeUpload;
+		return $this->maxSizeUpload;
+	}
+	public function coordonate($coordonates = array(0,0,0,0)){
+		$pt = [];
+		//coordonnées du point de destination
+		$this->pt_dst_x = $coordonates[0];
+		//coordonnées du point de destination
+		$this->pt_dst_y = $coordonates[1];
+		//coordonnées du point source
+		$this->pt_src_x = $coordonates[2];
+		//coordonnées du point source
+		$this->pt_src_y = $coordonates[3];
+		return $pt;
+	}
+
+	public function width($width = self::WIDTH_INIT){
+		$this->width = $width;
+	}
+	public function qualityPercent($qualityPercent = self::QUALITY_PERCENT){
+		$this->qualityPercent = $qualityPercent;
+	}
+
+	public function prefixer(){
+
+	}
+	public function suffixer(){
+
+	}
+
 	public function getImageUploadError(){
 		$this->imageUploadError = $this->imageUpload['error'];
 		return $this->imageUploadError;
@@ -80,10 +137,6 @@ class UploadImage
 		$imageCopyTmpName = imagecreatefrompng($this->getImageUploadTmpName()); //créer une copie de votre image
 		return $imageCopyTmpName;
 	}
-	public function setImageCopySize(){
-		$imageCopySize = getimagesize($this->getImageUploadTmpName()); //défini ses dimensions.
-		return $imageCopySize;
-	}
 	public function destroyImageCopyJPG(){
 		imagedestroy($this->setImageCopyTmpNameInJPG());
 	}
@@ -91,9 +144,17 @@ class UploadImage
 		imagedestroy($this->setImageCopyTmpNameInPNG());
 	}
 
-	public function newNameImage($préfixe = null,$suffixe = null){
-		$name = $préfixe.time().$suffixe;
-		return $name;
+	public function setImageCopySize(){
+		$imageCopySize = getimagesize($this->getImageUploadTmpName()); //défini ses dimensions.
+		return $imageCopySize;
+	}
+	public function newNameImage($name = null, $préfixe = null,$suffixe = null){
+		if ($name != null)
+			$this->nameNewImage = $préfixe.$name.$suffixe;
+		else
+			$this->nameNewImage = $préfixe.time().$suffixe;
+		
+		return $this->nameNewImage;
 	}
 
 	public function newImage($newWidth, $newHeight){
@@ -105,31 +166,16 @@ class UploadImage
 	}
 
 	public function resizingHeightProportional($width){
-
 		$copyTemporaryImageSize = $this->setImageCopySize();
 		$reduction = (($width * 100)/$copyTemporaryImageSize[0]);
 		$height = (($copyTemporaryImageSize[1] * $reduction)/100);
 		return $height;
 	}
-	public function coordonate($coordonates = array(0,0,0,0)){
-		$pt = [];
-		//coordonnées du point de destination
-		$this->pt_dst_x = $coordonates[0];
-		//coordonnées du point de destination
-		$this->pt_dst_y = $coordonates[1];
-		//coordonnées du point source
-		$this->pt_src_x = $coordonates[2];
-		//coordonnées du point source
-		$this->pt_src_y = $coordonates[3];
-		return $pt;
-	}
 
-	public function maxSizeUpload($maxSizeUpload = 2097152){
-		$this->maxSizeUpload = $maxSizeUpload;
-		return $this->maxSizeUpload;
-	}
 
-	public function resizeJPG($width,$qualityPercent = 100, $prefixeNameFile, $pathFolderFile)
+
+
+	public function resizeJPG($pathFolderFile)
 	{
 		if($this->getImageUploadMime() == $this->extensionAllowed()[$this->getImageUploadExtension()]  || 
 			$this->getImageUploadMime() == $this->extensionEIAllowed()[$this->getImageUploadExtension()])
@@ -137,24 +183,24 @@ class UploadImage
 			$copyTemporaryImage = $this->setImageCopyTmpNameInJPG(); //créer une copie de votre image
 			$copyTemporaryImageSize = $this->setImageCopySize(); //défini ses dimensions.	
 
-			$height = $this->resizingHeightProportional($width);
+			$height = $this->resizingHeightProportional($this->width);
 
-			$newImage = $this->newImage($width,$height);
+			$newImage = $this->newImage($this->width,$height);
 
-			imagecopyresampled($newImage, $copyTemporaryImage, $this->pt_dst_x,$this->pt_dst_y,$this->pt_src_x,$this->pt_src_y, $width, $height, $copyTemporaryImageSize[0],$copyTemporaryImageSize[1]);
+			imagecopyresampled($newImage, $copyTemporaryImage, $this->pt_dst_x,$this->pt_dst_y,$this->pt_src_x,$this->pt_src_y, $this->width, $height, $copyTemporaryImageSize[0],$copyTemporaryImageSize[1]);
 			
 			//Destruction de l'image
 			$this->destroyImageCopyJPG();
 
 			//Modification de son nom
-			$nameNewImage = $this->newNameImage($prefixeNameFile);
+			//$nameNewImage = $this->newNameImage();
 
-			imagejpeg($newImage , $pathFolderFile.$nameNewImage.'.'.$this->getImageUploadExtension(), $qualityPercent);
+			imagejpeg($newImage , $pathFolderFile.$this->nameNewImage.'.'.$this->getImageUploadExtension(), $this->qualityPercent);
 		
 			return true;
 		}
 	}
-	public function resizePNG($width,$qualityPercent = 9, $prefixeNameFile, $pathFolderFile)
+	public function resizePNG($pathFolderFile)
 	{
 		if($this->getImageUploadMime() == $this->extensionAllowed()[$this->getImageUploadExtension()]  || 
 			$this->getImageUploadMime() == $this->extensionEIAllowed()[$this->getImageUploadExtension()])
@@ -162,27 +208,27 @@ class UploadImage
 			$copyTemporaryImage = $this->setImageCopyTmpNameInPNG(); //créer une copie de votre image
 			$copyTemporaryImageSize = $this->setImageCopySize(); //défini ses dimensions.	
 
-			$height = $this->resizingHeightProportional($width);
+			$height = $this->resizingHeightProportional($this->width);
 
-			$newImage = $this->newImage($width,$height);
+			$newImage = $this->newImage($this->width,$height);
 
-			imagecopyresampled($newImage, $copyTemporaryImage, $this->pt_dst_x,$this->pt_dst_y,$this->pt_src_x,$this->pt_src_y, $width, $height, $copyTemporaryImageSize[0],$copyTemporaryImageSize[1]);
+			imagecopyresampled($newImage, $copyTemporaryImage, $this->pt_dst_x,$this->pt_dst_y,$this->pt_src_x,$this->pt_src_y, $this->width, $height, $copyTemporaryImageSize[0],$copyTemporaryImageSize[1]);
 			
 			//Destruction de l'image
 			$this->destroyImageCopyPNG();
 
 			//Modification de son nom
-			$nameNewImage = $this->newNameImage($prefixeNameFile);
-			if ($qualityPercent > 9) {
-				$qualityPercent = ($qualityPercent/100) * 9;
+			//$nameNewImage = $this->newNameImage();
+			if ($this->qualityPercent > 9) {
+				$this->qualityPercent = ($this->qualityPercent/100) * 9;
 			}
-			imagepng($newImage , $pathFolderFile.$nameNewImage.'.'.$this->getImageUploadExtension(), $qualityPercent);
+			imagepng($newImage , $pathFolderFile.$this->nameNewImage.'.'.$this->getImageUploadExtension(), $this->qualityPercent);
 		
 			return true;
 		}
 	}
 
-	public function resize($width = 100, $qualityPercent, $prefixeNameFile, $pathFolderFile = null){
+	public function resize($pathFolderFile = null){
 		if ($this->getImageUploadError() > 0) {
 			trigger_error("L'image contint une erreur.");
 			return false;
@@ -197,11 +243,11 @@ class UploadImage
 			{
 	
 				if ($this->getImageUploadExtension() == 'jpg' || $this->getImageUploadExtension() == 'jpeg') {
-					$response = $this->resizeJPG($width, $qualityPercent, $prefixeNameFile, $pathFolderFile);
+					$response = $this->resizeJPG($pathFolderFile);
 					return $response;
 				}
 				if ($this->getImageUploadExtension() == 'png') {
-					$response = $this->resizePNG($width, $qualityPercent, $prefixeNameFile, $pathFolderFile);
+					$response = $this->resizePNG($pathFolderFile);
 					return $response;
 				}
 			}
@@ -217,17 +263,20 @@ class UploadImage
 
 
 //$maxSizeUpload = 2097152;
-$widthImage = 350;
-$qualityPercent = 100;
+//$widthImage = 350;
+//$qualityPercent = 100;
+
 $prefixeNameFile = 'okok';
 $pathFolderFile = 'imagesnews/';
-$coordonates = array(50,50,250,250);
 
 if (!empty($_FILES['ImageNews'])) {
 	$editPhoto = new UploadImage($_FILES['ImageNews']);
+	//$editPhoto->qualityPercent(80);
+	//$editPhoto->width(50);
 	//$editPhoto->maxSizeUpload(200);
-	$editPhoto->coordonate($coordonates);
-	$editPhoto->resize($widthImage, $qualityPercent, $prefixeNameFile, $pathFolderFile);
+	//$editPhoto->coordonate(array(50,50,250,250));
+	//$editPhoto->newNameImage('name', 'prefixe', 'suffixe');
+	$editPhoto->resize($pathFolderFile);
 }
 
 
@@ -273,6 +322,16 @@ if (!empty($_FILES['ImageNews']))
 		}
 	}
 }*/
+
+
+/*
+
+Ce script n'apporte pas une sécurité optimale (faille du byte NULL par exemple ;) ).
+De plus il est préférable, quand cela est possible, d'utiliser la fonction system ou shell_exec pour connaître le type MIME du fichier de façon un peu plus certaine.
+
+*/
+
+
 ?>
 <!DOCTYPE html>
 <html>
