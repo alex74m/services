@@ -11,14 +11,9 @@ Entre ces deux versions, le format n'est pas supporté par GD.
 */
 
 
-
-
 class UploadImage
 {
 
-	const MAX_UPLOAD_SIZE = 2097152;
-	const WIDTH_INIT = 500;
-	const QUALITY_PERCENT = 100;
 	// Données d'objet
 	private $imageUpload;
 	private $imageUploadError;
@@ -31,11 +26,13 @@ class UploadImage
 	private $width;
 	private $qualityPercent;
 	private $newNameImage;
-	private $prefixe;
-	private $suffixe;
 
 
 	//Contrains
+	const MAX_UPLOAD_SIZE = 2097152;
+	const WIDTH_INIT = 500;
+	const QUALITY_PERCENT = 100;
+
 	private $extensionAllowed;
 	private $extensionEIAllowed;
 	private $maxSizeUpload;
@@ -47,18 +44,17 @@ class UploadImage
 	private $pt_dst_y;
 	private $pt_src_x;
 	private $pt_src_y;
-
+	private $pathFolderFile;
 
 
 	public function __construct($imageUpload){
 		$this->imageUpload = $imageUpload;
-		$this->maxSizeUpload = $this->maxSizeUpload();
+		$this->maxSizeUpload();
 		$this->coordonate();
 		$this->width();
 		$this->qualityPercent();
 		$this->newNameImage();
-		$this->prefixer();
-		$this->suffixer();
+		$this->pathFolderFile();
 	}
 
 	//Traitement de base
@@ -79,18 +75,19 @@ class UploadImage
 		return $pt;
 	}
 
+	public function pathFolderFile($pathFolderFile = null){
+		if (!is_dir($pathFolderFile) & $pathFolderFile != null) {
+			mkdir($pathFolderFile, 777);
+		}
+		$this->pathFolderFile = $pathFolderFile;
+		return $this->pathFolderFile;
+	}
+
 	public function width($width = self::WIDTH_INIT){
 		$this->width = $width;
 	}
 	public function qualityPercent($qualityPercent = self::QUALITY_PERCENT){
 		$this->qualityPercent = $qualityPercent;
-	}
-
-	public function prefixer(){
-
-	}
-	public function suffixer(){
-
 	}
 
 	public function getImageUploadError(){
@@ -123,10 +120,19 @@ class UploadImage
 		$this->extensionEIAllowed = array('jpg' => 'image/pjpg', 'jpeg'=>'image/pjpeg');
 		return $this->extensionEIAllowed;
 	}
+	/**
+	 * Double vérification du MIME avec la fonction native de php : mime_content_type
+	 */
 	public function getImageUploadMime(){
+		$checkMime = mime_content_type($this->getImageUploadTmpName());
 		$this->imageUploadMime = getimagesize($this->getImageUploadTmpName());
 		$this->imageUploadMime = $this->imageUploadMime['mime'];
-		return $this->imageUploadMime;
+		
+		if ($checkMime == $this->imageUploadMime)
+			return $this->imageUploadMime;
+		else
+			trigger_error("Les vérifications MIME ne correspondent pas.".$checkMime." != ".$this->imageUploadMime);
+		
 	}
 
 	public function setImageCopyTmpNameInJPG(){
@@ -150,9 +156,9 @@ class UploadImage
 	}
 	public function newNameImage($name = null, $préfixe = null,$suffixe = null){
 		if ($name != null)
-			$this->nameNewImage = $préfixe.$name.$suffixe;
+			$this->nameNewImage = $préfixe.$name.$suffixe.time();
 		else
-			$this->nameNewImage = $préfixe.time().$suffixe;
+			$this->nameNewImage = time();
 		
 		return $this->nameNewImage;
 	}
@@ -172,10 +178,7 @@ class UploadImage
 		return $height;
 	}
 
-
-
-
-	public function resizeJPG($pathFolderFile)
+	public function resizeJPG()
 	{
 		if($this->getImageUploadMime() == $this->extensionAllowed()[$this->getImageUploadExtension()]  || 
 			$this->getImageUploadMime() == $this->extensionEIAllowed()[$this->getImageUploadExtension()])
@@ -193,14 +196,12 @@ class UploadImage
 			$this->destroyImageCopyJPG();
 
 			//Modification de son nom
-			//$nameNewImage = $this->newNameImage();
-
-			imagejpeg($newImage , $pathFolderFile.$this->nameNewImage.'.'.$this->getImageUploadExtension(), $this->qualityPercent);
+			imagejpeg($newImage , $this->pathFolderFile.$this->nameNewImage.'.'.$this->getImageUploadExtension(), $this->qualityPercent);
 		
 			return true;
 		}
 	}
-	public function resizePNG($pathFolderFile)
+	public function resizePNG()
 	{
 		if($this->getImageUploadMime() == $this->extensionAllowed()[$this->getImageUploadExtension()]  || 
 			$this->getImageUploadMime() == $this->extensionEIAllowed()[$this->getImageUploadExtension()])
@@ -218,23 +219,22 @@ class UploadImage
 			$this->destroyImageCopyPNG();
 
 			//Modification de son nom
-			//$nameNewImage = $this->newNameImage();
 			if ($this->qualityPercent > 9) {
 				$this->qualityPercent = ($this->qualityPercent/100) * 9;
 			}
-			imagepng($newImage , $pathFolderFile.$this->nameNewImage.'.'.$this->getImageUploadExtension(), $this->qualityPercent);
+			imagepng($newImage , $this->pathFolderFile.$this->nameNewImage.'.'.$this->getImageUploadExtension(), $this->qualityPercent);
 		
 			return true;
 		}
 	}
 
-	public function resize($pathFolderFile = null){
+	public function resize(){
 		if ($this->getImageUploadError() > 0) {
 			trigger_error("L'image contint une erreur.");
 			return false;
 		}
 		if ($this->getImageUploadSize() > $this->maxSizeUpload) {
-			trigger_error("La taille de l'image est trop grande.");
+			trigger_error("La taille de l'image est trop grande. max : ". $this->maxSizeUpload);
 			return false;
 		}
 		if($this->getImageUploadMime() == $this->extensionAllowed()[$this->getImageUploadExtension()]  || $this->getImageUploadMime() == $this->extensionEIAllowed()[$this->getImageUploadExtension()])
@@ -243,45 +243,36 @@ class UploadImage
 			{
 	
 				if ($this->getImageUploadExtension() == 'jpg' || $this->getImageUploadExtension() == 'jpeg') {
-					$response = $this->resizeJPG($pathFolderFile);
+					$response = $this->resizeJPG();
 					return $response;
 				}
 				if ($this->getImageUploadExtension() == 'png') {
-					$response = $this->resizePNG($pathFolderFile);
+					$response = $this->resizePNG();
 					return $response;
 				}
 			}
 		}else{
 			trigger_error("Le MIME est incorrect.");
 			return false;
-		}			
-
-
-
+		}
 	}
 }
 
-
-//$maxSizeUpload = 2097152;
-//$widthImage = 350;
-//$qualityPercent = 100;
-
-$prefixeNameFile = 'okok';
-$pathFolderFile = 'imagesnews/';
-
 if (!empty($_FILES['ImageNews'])) {
 	$editPhoto = new UploadImage($_FILES['ImageNews']);
-	//$editPhoto->qualityPercent(80);
-	//$editPhoto->width(50);
-	//$editPhoto->maxSizeUpload(200);
-	//$editPhoto->coordonate(array(50,50,250,250));
-	//$editPhoto->newNameImage('name', 'prefixe', 'suffixe');
-	$editPhoto->resize($pathFolderFile);
+	$editPhoto->qualityPercent(80);
+	$editPhoto->width(500);
+	$editPhoto->maxSizeUpload(2000000);
+	$editPhoto->coordonate(array(0,0,0,0));
+	$editPhoto->newNameImage('name', 'prefixe', 'suffixe');
+	$editPhoto->pathFolderFile('imagesnews/');
+	$editPhoto->resize();
 }
 
 
 
 /*
+----------------------- PROCEDURAL ----------------------
 if (!empty($_FILES['ImageNews']))
 {
 	if ($_FILES['ImageNews']['error'] <= 0)
@@ -326,7 +317,7 @@ if (!empty($_FILES['ImageNews']))
 
 /*
 
-Ce script n'apporte pas une sécurité optimale (faille du byte NULL par exemple ;) ).
+Ce script n'apporte pas une sécurité optimale (faille du byte NULL par exemple)).
 De plus il est préférable, quand cela est possible, d'utiliser la fonction system ou shell_exec pour connaître le type MIME du fichier de façon un peu plus certaine.
 
 */
@@ -352,6 +343,18 @@ De plus il est préférable, quand cela est possible, d'utiliser la fonction sys
         </p>
 </fieldset>
 </form>
+
+
+<?php
+/*
+
+$last_line = system();
+
+shell_exec('mkdir directory');
+
+*/
+
+?>
 
 </body>
 </html>
