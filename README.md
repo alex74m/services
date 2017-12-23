@@ -4,8 +4,11 @@ Ce service est prévu en premier lieu pour des ressources de type images jpg ou 
 
 ## Utilisation
 
-Création du service:
+Création du service :
 $editPhoto = new UploadImage($_FILES['ImageNews']);
+
+Redimensionnement de l'image :
+$editPhoto->resize();
 
 ## Fonctionnalités
 
@@ -43,3 +46,12 @@ Arguments : $name, $prefixe, $suffixe type string
 $editPhoto->newNameImage('name', 'prefixe', 'suffixe'); // Applique un nom, un préfixe, un suffixe et une concaténation unique avec la fonction time() sur le nom de la nouvelle image.
 Par défaut les valeurs $name, $prefixe, $suffixe sont nulles.
 En cas de valeurs nulles, l'image est renommées avec la fonction time() uniquement.
+
+Modification du dossier d'enregistrement:
+Méthode : pathFolderFile($folder)
+Argument : $folder type string
+$editPhoto->pathFolderFile('images/'); // Indique le dossier dans lequel l'image sera enregistré. 
+Si le dossier n'existe pas, celui-ci sera créé.
+Par défaut l'image est enregistrée dans le dossier courant.
+
+Ne pas oublier d'appliquer la méthode :resize() pour finaliser l'enregistrement de la ressources.
