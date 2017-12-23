@@ -1,10 +1,10 @@
-# services n°1 : Redimensionnement d'image  :star: :star: :star:
+# services n°1 : Redimensionnement d'image  :star: :star: :star: :milky_way:
 
 Ce service est prévu en premier lieu pour des ressources de type images jpg ou png.
 
 ## Utilisation
 
-Création du service :
+Création du service :<br/>;
 $editPhoto = new UploadImage($_FILES['ImageNews']); // la ressource $_FILES est obligatoire
 
 Redimensionnement de l'image :
