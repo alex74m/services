@@ -21,26 +21,16 @@ Redimensionnement de l'image :<br/>
 <table>
     <thead>
         <tr>
-            <th>header 1</th>
-            <th align="center">header 2</th>
-            <th align="right">header 3</th>
+            <th align="center">Utilité</th>
+            <th align="center">Méthode</th>
+            <th align="center">Argument</th>
         </tr>
     </thead>
     <tbody>
         <tr>
-            <td>line 1</td>
-            <td align="center">1</td>
-            <td align="right">value</td>
-        </tr>
-        <tr>
-            <td>row 2</td>
-            <td align="center">2</td>
-            <td align="right">value</td>
-        </tr>
-        <tr>
-            <td>line 3</td>
-            <td align="center">3</td>
-            <td align="right">value</td>
+            <td>Qualité</td>
+            <td align="center">qualityPercent()</td>
+            <td align="center">$quality [int]</td>
         </tr>
     </tbody>
 </table>
