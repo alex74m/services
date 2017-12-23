@@ -10,14 +10,6 @@ Création du service :<br/>
 Redimensionnement de l'image :<br/>
 **$editPhoto->resize();** // sans arguments<br/>
 
-| Utilité       |     Méthode     |   Argument |
-| ------------- |: -------------: | ---------: |
-| Qualité       |qualityPercent() | $quality [int] |
-| Dimension     |        2        |      value |
-| Poids         |        3        |      value |
-| Coordonnées   |        3        |      value |
-| Nom           |        3        |      value |
-| Dossier       |        3        |      value |
 <table>
     <thead>
         <tr>
@@ -32,8 +24,34 @@ Redimensionnement de l'image :<br/>
             <td align="center">qualityPercent()</td>
             <td align="center">$quality [int]</td>
         </tr>
+        <tr>
+            <td>Dimension</td>
+            <td align="center">width()</td>
+            <td align="center">$width [int]</td>
+        </tr>
+        <tr>
+            <td>Poids</td>
+            <td align="center">maxSizeUpload()</td>
+            <td align="center">$size [int]</td>
+        </tr>
+        <tr>
+            <td>Coordonnées</td>
+            <td align="center">coordonate()</td>
+            <td align="center">$coordonate [array]</td>
+        </tr>
+        <tr>
+            <td>Nom</td>
+            <td align="center">qualityPercent()</td>
+            <td align="center">$name [string], $prefixe [string], $suffixe [string]</td>
+        </tr>
+        <tr>
+            <td>Dossier</td>
+            <td align="center">pathFolderFile()</td>
+            <td align="center">$folder [string]</td>
+        </tr>
     </tbody>
 </table>
+
 ## Fonctionnalités
 
 ### Modification de la qualité de la nouvelle image en pourcent:
