@@ -67,13 +67,13 @@ $editPhoto->width(500); // Indique une largeur de 500px quelque soit la largeur 
 Par défaut la largeur est réglée à 500px.   <br/>
 
 ### Modification du poid acceptable en octet:
-Méthode : **maxSizeUpload($size)**<br/>   
+Méthode : **maxSizeUpload($size)**<br/>
 Argument : $size type integer  <br/> 
 $editPhoto->maxSizeUpload(2000000); // Indique le poid maximum de l'image avant son upload (ici 2000000 octets).  <br/> 
 Par défaut la largeur est réglée à 2097152 octets.  <br/> 
 
 ### Modification des coordonnées de la nouvelle image en pixel:
-Méthode : **coordonate($coordonate)**   <br/>
+Méthode : **coordonate($coordonate)**<br/>
 Argument : $coordonate type array -> array(dst_x,dst_y,src_x,src_y) <br/>
 dst_x : coordonnées du point de destination.  <br/>
 dst_y : coordonnées du point de destination.  <br/>
