@@ -4,55 +4,55 @@ Ce service est prévu en premier lieu pour des ressources de type images jpg ou 
 
 ## Utilisation
 
-Création du service :<br/>;
-$editPhoto = new UploadImage($_FILES['ImageNews']); // la ressource $_FILES est obligatoire
-
-Redimensionnement de l'image :
-$editPhoto->resize(); // sans arguments
+Création du service :<br/>
+$editPhoto = new UploadImage($_FILES['ImageNews']); // la ressource $_FILES est obligatoire<br/>
+<br/>
+Redimensionnement de l'image :<br/>
+$editPhoto->resize(); // sans arguments<br/>
 
 ## Fonctionnalités
 
 ### Modification de la qualité de la nouvelle image en pourcent:
-Méthode : qualityPercent($quality)
-Argument : $quality type integer
-$editPhoto->qualityPercent(80); // Indique une dégradation de 20%(100% - 20% = 80%) par rapport à la qualité originale.
-Par défaut la qualité est réglée à 100%.
+Méthode : qualityPercent($quality)<br/>
+Argument : $quality type integer<br/>
+$editPhoto->qualityPercent(80); // Indique une dégradation de 20%(100% - 20% = 80%) par rapport à la qualité originale.<br/>
+Par défaut la qualité est réglée à 100%.<br/>
 
 ### Modification de la largeur en pixel:
-Méthode : width($width)   
-Argument : $width type integer   
-$editPhoto->width(500); // Indique une largeur de 500px quelque soit la largeur originale.   
-Par défaut la largeur est réglée à 500px.   
+Méthode : width($width)   <br/>
+Argument : $width type integer   <br/>
+$editPhoto->width(500); // Indique une largeur de 500px quelque soit la largeur originale.  <br/> 
+Par défaut la largeur est réglée à 500px.   <br/>
 
 ### Modification du poid acceptable en octet:
-Méthode : maxSizeUpload($size)   
-Argument : $size type integer   
-$editPhoto->maxSizeUpload(2000000); // Indique le poid maximum de l'image avant son upload (ici 2000000 octets).   
-Par défaut la largeur est réglée à 2097152 octets.   
+Méthode : maxSizeUpload($size)<br/>   
+Argument : $size type integer  <br/> 
+$editPhoto->maxSizeUpload(2000000); // Indique le poid maximum de l'image avant son upload (ici 2000000 octets).  <br/> 
+Par défaut la largeur est réglée à 2097152 octets.  <br/> 
 
 ### Modification des coordonnées de la nouvelle image en pixel:
-Méthode : coordonate($coordonate)   
-Argument : $coordonate type array -> array(dst_x,dst_y,src_x,src_y)   
-dst_x : coordonnées du point de destination.   
-dst_y : coordonnées du point de destination.   
-src_x : coordonnées du point source.  
-src_y : coordonnées du point source.   
-$editPhoto->coordonate(array(0,0,0,0)); // Créer une image cadrée aux origines sur le point de destination et source.   
-Par défaut la largeur est réglée à 0,0,0,0 pixel, soit aucuns décalages.   
+Méthode : coordonate($coordonate)   <br/><br/>
+Argument : $coordonate type array -> array(dst_x,dst_y,src_x,src_y) <br/><br/>  
+dst_x : coordonnées du point de destination.  <br/><br/> 
+dst_y : coordonnées du point de destination.  <br/><br/> 
+src_x : coordonnées du point source.  <br/><br/>
+src_y : coordonnées du point source.   <br/><br/>
+$editPhoto->coordonate(array(0,0,0,0)); // Créer une image cadrée aux origines sur le point de destination et source. <br/><br/>  
+Par défaut la largeur est réglée à 0,0,0,0 pixel, soit aucuns décalages. <br/><br/>  
 
 ### Modification du nom de l'image qui sera enregistrée:
-Méthode : newNameImage($name, $prefixe, $suffixe)   
-Arguments : $name, $prefixe, $suffixe type string   
-$editPhoto->newNameImage('name', 'prefixe', 'suffixe'); // Applique un nom, un préfixe, un suffixe et une concaténation unique    avec la fonction time() sur le nom de la nouvelle image.     
-Par défaut les valeurs $name, $prefixe, $suffixe sont nulles.  
-En cas de valeurs nulles, l'image est renommée avec la fonction time() uniquement.  
+Méthode : newNameImage($name, $prefixe, $suffixe)  <br/> 
+Arguments : $name, $prefixe, $suffixe type string  <br/> 
+$editPhoto->newNameImage('name', 'prefixe', 'suffixe'); // Applique un nom, un préfixe, un suffixe et une concaténation unique    avec la fonction time() sur le nom de la nouvelle image.   <br/>  
+Par défaut les valeurs $name, $prefixe, $suffixe sont nulles.  <br/>
+En cas de valeurs nulles, l'image est renommée avec la fonction time() uniquement. <br/> 
 
 ### Modification du dossier d'enregistrement:
-Méthode : pathFolderFile($folder)  
-Argument : $folder type string  
-$editPhoto->pathFolderFile('images/'); // Indique le dossier dans lequel l'image sera enregistré.   
-Si le dossier n'existe pas, celui-ci sera créé.  
-Par défaut l'image est enregistrée dans le dossier courant.  
+Méthode : pathFolderFile($folder)  <br/>
+Argument : $folder type string <br/> 
+$editPhoto->pathFolderFile('images/'); // Indique le dossier dans lequel l'image sera enregistré.  <br/> 
+Si le dossier n'existe pas, celui-ci sera créé.  <br/>
+Par défaut l'image est enregistrée dans le dossier courant.  <br/>
    
-     
-Ne pas oublier d'appliquer la méthode resize() pour finaliser l'enregistrement de la ressources. 
+<br/><br/>
+Ne pas oublier d'appliquer la méthode resize() pour finaliser l'enregistrement de la ressources. <br/>
