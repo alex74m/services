@@ -97,4 +97,4 @@ Si le dossier n'existe pas, celui-ci sera créé.  <br/>
 Par défaut l'image est enregistrée dans le dossier courant.  <br/>
    
 <br/><br/>
-*Ne pas oublier d'appliquer la méthode **resize()** pour finaliser l'enregistrement de la ressources.* <br/>
+*Ne pas oublier d'appliquer la méthode **resize()** pour finaliser l'enregistrement de la ressource.* <br/>
